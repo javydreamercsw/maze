@@ -354,8 +354,7 @@ public class Maze implements Cloneable {
                     break;
                 case KeyEvent.VK_SPACE:
                     System.out.println("Space");
-                    command = new ActuateDoorCommand(maze, getLastDirection());
-                    maze.doCommand(command);
+                    maze.doCommand(new ActuateDoorCommand(maze, getLastDirection()));
                     break;
                 default:
                     System.out.println("Key press ignored");
