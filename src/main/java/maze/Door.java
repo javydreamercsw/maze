@@ -94,4 +94,8 @@ public class Door implements MapSite {
 
     protected static AudioClip ding = util.AudioUtility.getAudioClip("audio/ding.au");
 
+    @Override
+    public void draw(Graphics g, int x, int y, int w, int h, Direction d) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

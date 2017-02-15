@@ -1,87 +1,86 @@
-
-package maze; 
+package maze;
 
 /*
- *  An enumeration type 
- */ 
-public class Direction implements Comparable { 
+ *  An enumeration type
+ */
+public class Direction implements Comparable {
 
-  public static final Direction NORTH = new Direction("North");
-  public static final Direction EAST  = new Direction("East");
-  public static final Direction SOUTH = new Direction("South");
-  public static final Direction WEST  = new Direction("West");
+    public static final Direction NORTH = new Direction("North");
+    public static final Direction EAST = new Direction("East");
+    public static final Direction SOUTH = new Direction("South");
+    public static final Direction WEST = new Direction("West");
 
-  public String toString() { 
-    return name; 
-  }
+    private static int nextOrdinal = 0;
+    private final String name;
+    private final int ordinal = nextOrdinal++;
 
-  public int getOrdinal() { 
-    return ordinal;
-  }
+    private static final Direction[] VALUES = {NORTH, EAST, SOUTH, WEST};
 
-  public int compareTo(Object o) { 
-    if (o instanceof Direction) { 
-      return ordinal - ((Direction) o).getOrdinal();
+    @Override
+    public String toString() {
+        return name;
     }
-    return 0;
-  }
 
-  public static Direction first() { 
-    return values[0]; 
-  }
-
-  public Direction next() { 
-    if (ordinal < values.length - 1) { 
-      return values[ordinal + 1]; 
-    } else { 
-      return null; 
+    public int getOrdinal() {
+        return ordinal;
     }
-  }
 
-  public Direction opposite() { 
-    return values[(ordinal + 2) % 4]; 
-  }
-
-  /* 
-  public static Direction first() { 
-    return NORTH; 
-  }
-
-  public Direction next() { 
-    if (this == NORTH) { 
-      return EAST; 
-    } else if (this == EAST) { 
-      return SOUTH; 
-    } else if (this == SOUTH) { 
-      return WEST; 
-    } else if (this == WEST) { 
-      return null; 
+    @Override
+    public int compareTo(Object o) {
+        if (o instanceof Direction) {
+            return ordinal - ((Direction) o).getOrdinal();
+        }
+        return 0;
     }
-    return null;
+
+    public static Direction first() {
+        return VALUES[0];
+    }
+
+    public Direction next() {
+        if (ordinal < VALUES.length - 1) {
+            return VALUES[ordinal + 1];
+        } else {
+            return null;
+        }
+    }
+
+    public Direction opposite() {
+        return VALUES[(ordinal + 2) % 4];
+    }
+
+    /*
+  public static Direction first() {
+    return NORTH;
   }
 
-  public Direction opposite() { 
-    if (this == NORTH) { 
-      return SOUTH; 
-    } else if (this == EAST) { 
-      return WEST; 
-    } else if (this == SOUTH) { 
-      return NORTH; 
-    } else if (this == WEST) { 
-      return EAST; 
+  public Direction next() {
+    if (this == NORTH) {
+      return EAST;
+    } else if (this == EAST) {
+      return SOUTH;
+    } else if (this == SOUTH) {
+      return WEST;
+    } else if (this == WEST) {
+      return null;
     }
     return null;
   }
-  */ 
- 
-  private Direction(String name) { 
-    this.name = name; 
+
+  public Direction opposite() {
+    if (this == NORTH) {
+      return SOUTH;
+    } else if (this == EAST) {
+      return WEST;
+    } else if (this == SOUTH) {
+      return NORTH;
+    } else if (this == WEST) {
+      return EAST;
+    }
+    return null;
   }
-  
-  private static int nextOrdinal = 0;  
-  private final String name; 
-  private final int ordinal = nextOrdinal++; 
-
-  private static final Direction[] values = { NORTH, EAST, SOUTH, WEST }; 
-
-} 
+     */
+    private Direction(String name) {
+        this.name = name;
+    }
+}

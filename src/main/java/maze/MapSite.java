@@ -9,4 +9,6 @@ public interface MapSite extends Cloneable {
     public void enter(Maze maze);
 
     public void draw(Graphics g, int x, int y, int w, int h);
+
+    public void draw(Graphics g, int x, int y, int w, int h, Direction d);
 }

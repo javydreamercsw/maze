@@ -2,6 +2,7 @@ package maze.room;
 
 import java.awt.*;
 import java.applet.AudioClip;
+import java.awt.geom.AffineTransform;
 import maze.Direction;
 import maze.Door;
 import maze.MapSite;
@@ -83,12 +84,7 @@ public class Room implements MapSite {
 
     @Override
     public void draw(Graphics g, int x, int y, int w, int h) {
-        g.setColor(ROOM_COLOR);
-        g.fillRect(x, y, w, h);
-        if (inroom) {
-            g.setColor(PLAYER_COLOR);
-            g.fillOval(x + w / 2 - 5, y + h / 2 - 5, 10, 10);
-        }
+        draw(g, x, y, w, h, Direction.NORTH);
     }
 
     protected int roomNumber = 0;
@@ -97,5 +93,37 @@ public class Room implements MapSite {
     protected Point location = null;
 
     protected static AudioClip gong = util.AudioUtility.getAudioClip("audio/gong.au");
-    //protected static AudioClip spacemusic = util.AudioUtility.getAudioClip("audio/spacemusic.au");
+
+    @Override
+    public void draw(Graphics g, int x, int y, int w, int h, Direction d) {
+        g.setColor(ROOM_COLOR);
+        g.fillRect(x, y, w, h);
+        if (inroom) {
+            g.setColor(PLAYER_COLOR);
+            int width = 10;
+            int height = 10;
+            Point p1 = new Point(x + w / 2 - 5, y + h / 2);
+            Point p2 = new Point(p1.x + width, p1.y);
+            Point p3 = new Point(p1.x + (width / 2), p1.y - height);
+            Point[] points = new Point[]{p1, p2, p3};
+            int angle = 0;
+            if (d.equals(Direction.EAST)) {
+                angle = 90;
+            } else if (d.equals(Direction.WEST)) {
+                angle = 270;
+            } else if (d.equals(Direction.SOUTH)) {
+                angle = 180;
+            }
+            //Now rotater based on direction
+            Point center = new Point(x + w / 2, y + h / 2);
+            AffineTransform.getRotateInstance(Math.toRadians(angle),
+                    center.x, center.y)
+                    .transform(points, 0, points, 0, points.length);
+            Polygon polygon = new Polygon();
+            for (Point p : points) {
+                polygon.addPoint(p.x, p.y);
+            }
+            g.fillPolygon(polygon);
+        }
+    }
 }

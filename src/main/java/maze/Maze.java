@@ -14,6 +14,21 @@ import maze.command.ActuateDoorCommand;
 
 public class Maze implements Cloneable {
 
+    private static Direction lastDirection = Direction.NORTH;
+    protected List rooms = new ArrayList();
+    protected Dimension dim;
+    protected Point offset;
+    protected Room curRoom = null;
+    protected Stack moves = new Stack();
+
+    protected static Component view;
+
+    private static final int ROOM_SIZE = 40;
+    private static final int WALL_THICKNESS = 6;
+    private static final int MARGIN = 20;
+
+    private static final boolean debug = true;
+
     @Override
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
@@ -109,7 +124,7 @@ public class Maze implements Cloneable {
                     room.draw(g,
                             dx + location.x * ROOM_SIZE,
                             dy + location.y * ROOM_SIZE,
-                            ROOM_SIZE, ROOM_SIZE);
+                            ROOM_SIZE, ROOM_SIZE, getLastDirection());
                 }
             }
         }
@@ -241,20 +256,6 @@ public class Maze implements Cloneable {
         }
     }
 
-    protected List rooms = new ArrayList();
-    protected Dimension dim;
-    protected Point offset;
-    protected Room curRoom = null;
-    protected Stack moves = new Stack();
-
-    protected Component view;
-
-    private static final int ROOM_SIZE = 40;
-    private static final int WALL_THICKNESS = 6;
-    private static final int MARGIN = 20;
-
-    private static final boolean debug = true;
-
     protected void showFrame(String frameTitle) {
         JFrame frame;
         frame = new JFrame(frameTitle);
@@ -294,7 +295,6 @@ public class Maze implements Cloneable {
             requestFocus();
         }
 
-        //public boolean isFocusTraversable() { // pre 1.4
         @Override
         public boolean isFocusable() { // 1.4
             return true;
@@ -317,8 +317,6 @@ public class Maze implements Cloneable {
 
     static class MazeKeyListener extends KeyAdapter {
 
-        private Direction lastDirection;
-
         MazeKeyListener(Maze maze) {
             this.maze = maze;
         }
@@ -328,41 +326,51 @@ public class Maze implements Cloneable {
             System.out.println("Key pressed");
             Command command = null;
             int code = e.getKeyCode();
+            Direction newDirection = null;
             switch (code) {
                 case KeyEvent.VK_UP:
                     System.out.println("Up key");
-                    lastDirection = Direction.NORTH;
-                    command = new MazeMoveCommand(maze, lastDirection);
+                    newDirection = Direction.NORTH;
                     break;
                 case KeyEvent.VK_DOWN:
                     System.out.println("Down key");
-                    lastDirection = Direction.SOUTH;
-                    command = new MazeMoveCommand(maze, lastDirection);
-                    maze.move(Direction.SOUTH);
+                    newDirection = Direction.SOUTH;
                     break;
                 case KeyEvent.VK_LEFT:
                     System.out.println("Left key");
-                    lastDirection = Direction.WEST;
-                    command = new MazeMoveCommand(maze, lastDirection);
+                    newDirection = Direction.WEST;
                     break;
                 case KeyEvent.VK_RIGHT:
                     System.out.println("Right key");
-                    lastDirection = Direction.EAST;
-                    command = new MazeMoveCommand(maze, lastDirection);
+                    newDirection = Direction.EAST;
                     break;
                 case KeyEvent.VK_SPACE:
                     System.out.println("Space");
-                    command = new ActuateDoorCommand(maze, lastDirection);
+                    command = new ActuateDoorCommand(maze, getLastDirection());
+                    maze.doCommand(command);
                     break;
                 default:
                     System.out.println("Key press ignored");
+            }
+            if (newDirection != null && !lastDirection.equals(newDirection)) {
+                //Just change direction
+                lastDirection = newDirection;
+                view.repaint();
+            } else {
+                //Move
+                command = new MazeMoveCommand(maze, getLastDirection());
             }
             if (command != null) {
                 maze.doCommand(command);
             }
         }
-
         Maze maze;
     }
 
+    /**
+     * @return the lastDirection
+     */
+    public static Direction getLastDirection() {
+        return lastDirection;
+    }
 }
