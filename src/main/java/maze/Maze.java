@@ -11,6 +11,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import maze.command.ActuateDoorCommand;
+import maze.command.ChangeDirectionCommand;
 
 public class Maze implements Cloneable {
 
@@ -269,6 +270,13 @@ public class Maze implements Cloneable {
         frame.setVisible(true);
     }
 
+    public void changeDirection(Direction direction) {
+        lastDirection = direction;
+        if (view != null) {
+            view.repaint();
+        }
+    }
+
     public static class MazePanel extends JPanel {
 
         public MazePanel(Maze maze) {
@@ -354,8 +362,7 @@ public class Maze implements Cloneable {
             }
             if (newDirection != null && !lastDirection.equals(newDirection)) {
                 //Just change direction
-                lastDirection = newDirection;
-                view.repaint();
+                command = new ChangeDirectionCommand(maze, newDirection);
             } else {
                 //Move
                 command = new MazeMoveCommand(maze, getLastDirection());
