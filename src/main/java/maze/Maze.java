@@ -332,7 +332,7 @@ public class Maze implements Cloneable {
         @Override
         public void keyPressed(KeyEvent e) {
             System.out.println("Key pressed");
-            Command command = null;
+            Command command;
             int code = e.getKeyCode();
             Direction newDirection = null;
             switch (code) {
