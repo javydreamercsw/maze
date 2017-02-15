@@ -1,6 +1,7 @@
 package maze;
 
 import java.awt.Point;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import maze.room.Room;
@@ -18,6 +19,8 @@ public class InteractiveMazeGame extends javax.swing.JFrame
 
     private static final Logger LOG
             = Logger.getLogger(InteractiveMazeGame.class.getSimpleName());
+    private Room[][] rooms;
+    private IMazeFactory factory = new MazeFactory();
 
     /**
      * Creates new form InteractiveMazeGame
@@ -78,13 +81,13 @@ public class InteractiveMazeGame extends javax.swing.JFrame
 
         jLabel1.setText("Maze Layout");
 
-        rows.setModel(new javax.swing.SpinnerNumberModel(1, 1, null, 1));
+        rows.setModel(new javax.swing.SpinnerNumberModel(3, 1, null, 1));
 
         jLabel2.setText("Rows");
 
         jLabel3.setText("Columns");
 
-        columns.setModel(new javax.swing.SpinnerNumberModel(1, 1, null, 1));
+        columns.setModel(new javax.swing.SpinnerNumberModel(3, 1, null, 1));
 
         generate.setText("Generate");
         generate.addActionListener(new java.awt.event.ActionListener() {
@@ -239,7 +242,6 @@ public class InteractiveMazeGame extends javax.swing.JFrame
     private void generateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_generateActionPerformed
         int row = (int) rows.getValue();
         int col = (int) columns.getValue();
-        IMazeFactory factory = new MazeFactory();
         for (IMazeFactory f : Lookup.getDefault().lookupAll(IMazeFactory.class)) {
             if (f.getName().equals(layouts.getSelectedItem().toString())) {
                 factory = f;
@@ -247,7 +249,7 @@ public class InteractiveMazeGame extends javax.swing.JFrame
             }
         }
         Maze maze = factory.makeMaze();
-        Room[][] rooms = new Room[row][col];
+        rooms = new Room[row][col];
         int count = 0;
         for (int r = 0; r < row; r++) {
             for (int c = 0; c < col; c++) {
@@ -264,20 +266,65 @@ public class InteractiveMazeGame extends javax.swing.JFrame
                 rooms[r][c].setLocation(new Point(c, r));
                 //Link to nearby rooms
                 if (c > 0) {
-                    //Has a room to the left
-                    rooms[r][c - 1].setSide(Direction.WEST.opposite(), null);
+                    //Has a room to the left. Add a wall, door or set open
+                    setRandomSide(Direction.WEST, r, c);
                 }
                 if (r > 0) {
                     //Has a room to on top
-                    rooms[r - 1][c].setSide(Direction.NORTH.opposite(), null);
+                    setRandomSide(Direction.NORTH, r, c);
                 }
                 maze.addRoom(rooms[r][c]);
+            }
+        }
+        for (int r = 0; r < row; r++) {
+            for (int c = 0; c < col; c++) {
+                //Connect doors to next room
+                if (r > 0) {
+                    fixSide(Direction.NORTH, r, c);
+                }
+                if (c < rooms[0].length - 1) {
+                    fixSide(Direction.EAST, r, c);
+                }
+                if (c > 0) {
+                    fixSide(Direction.WEST, r, c);
+                }
+                if (r < rooms.length - 1) {
+                    fixSide(Direction.SOUTH, r, c);
+                }
             }
         }
         LOG.log(Level.INFO, "Added {0} rooms", count);
         maze.setCurrentRoom(1);
         jScrollPane1.setViewportView(new Maze.MazePanel(maze));
     }//GEN-LAST:event_generateActionPerformed
+
+    private void fixSide(Direction d, int r, int c) {
+        MapSite side = rooms[r][c].getSide(d);
+        Room r2;
+        if (d.equals(Direction.NORTH)) {
+            r2 = rooms[r - 1][c];
+        } else if (d.equals(Direction.SOUTH)) {
+            r2 = rooms[r + 1][c];
+        } else if (d.equals(Direction.EAST)) {
+            r2 = rooms[r][c + 1];
+        } else {
+            r2 = rooms[r][c - 1];
+        }
+        if (side instanceof Door) {
+            Door door = (Door) side;
+            door.setRooms(rooms[r][c], r2);
+            r2.setSide(d.opposite(), door);
+        } else if (side == null) {
+            r2.setSide(d.opposite(), null);
+        }
+    }
+
+    private void setRandomSide(Direction d, int row, int col) {
+        //Door
+        Door door = factory.makeDoor(rooms[row][col], null);
+        door.setOpen(new Random().nextBoolean());
+        rooms[row][col].setSide(d, door);
+    }
 
     /**
      * @param args the command line arguments
