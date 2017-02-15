@@ -1,7 +1,6 @@
 package maze.room;
 
 import java.awt.*;
-import java.applet.AudioClip;
 import java.awt.geom.AffineTransform;
 import maze.Direction;
 import maze.Door;
@@ -11,8 +10,8 @@ import maze.Orientation;
 
 public class Room implements MapSite {
 
-    public static final Color ROOM_COLOR = new Color(152, 251, 152);
-    public static final Color PLAYER_COLOR = Color.red;
+    public static Color ROOM_COLOR = new Color(152, 251, 152);
+    public static Color PLAYER_COLOR = Color.red;
 
     public Room(int roomNumber) {
         this.roomNumber = roomNumber;
@@ -71,7 +70,6 @@ public class Room implements MapSite {
     @Override
     public void enter(Maze maze) {
         maze.setCurrentRoom(this);
-        gong.play();
     }
 
     public boolean isInRoom() {
@@ -91,8 +89,6 @@ public class Room implements MapSite {
     protected boolean inroom = false;
     protected MapSite[] sides = new MapSite[4];
     protected Point location = null;
-
-    protected static AudioClip gong = util.AudioUtility.getAudioClip("audio/gong.au");
 
     @Override
     public void draw(Graphics g, int x, int y, int w, int h, Direction d) {

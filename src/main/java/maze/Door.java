@@ -3,10 +3,14 @@ package maze;
 import maze.room.Room;
 import maze.output.OutputConsumer;
 import java.awt.*;
-import java.applet.AudioClip;
 import org.openide.util.Lookup;
 
 public class Door implements MapSite {
+
+    protected Room room1;
+    protected Room room2;
+    protected boolean open;
+    protected Orientation orientation;
 
     public Door(Room room1, Room room2) {
         this.room1 = room1;
@@ -61,7 +65,6 @@ public class Door implements MapSite {
             Lookup.getDefault().lookupAll(OutputConsumer.class).forEach((consumer) -> {
                 consumer.output("Door is closed");
             });
-            ding.play();
         }
     }
 
@@ -86,13 +89,6 @@ public class Door implements MapSite {
             g.drawRect(x, y, w, h);
         }
     }
-
-    protected Room room1;
-    protected Room room2;
-    protected boolean open;
-    protected Orientation orientation;
-
-    protected static AudioClip ding = util.AudioUtility.getAudioClip("audio/ding.au");
 
     @Override
     public void draw(Graphics g, int x, int y, int w, int h, Direction d) {

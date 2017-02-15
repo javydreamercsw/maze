@@ -2,22 +2,19 @@ package maze.harry;
 
 import maze.room.Room;
 import java.awt.*;
-import java.applet.AudioClip;
 import maze.*;
 
 class HarryPotterRoom extends Room {
 
-    public static final Color ROOM_COLOR = new Color(85, 107, 47);
-    public static final Color PLAYER_COLOR = Color.black;
-
     public HarryPotterRoom(int roomNumber) {
         super(roomNumber);
+        ROOM_COLOR = new Color(85, 107, 47);
+        PLAYER_COLOR = Color.black;
     }
 
     @Override
     public void enter(Maze maze) {
         maze.setCurrentRoom(this);
-        adapt.play();
     }
 
     @Override
@@ -29,7 +26,4 @@ class HarryPotterRoom extends Room {
             g.fillOval(x + w / 2 - 5, y + h / 2 - 5, 10, 10);
         }
     }
-
-    protected static AudioClip adapt = util.AudioUtility.getAudioClip("audio/adapt-or-die.au");
-
 }

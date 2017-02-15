@@ -1,12 +1,10 @@
 package maze;
 
 import java.awt.*;
-import java.applet.AudioClip;
 
 public class Wall implements MapSite {
 
     public static final Color WALL_COLOR = Color.orange;
-    protected static AudioClip hurts = util.AudioUtility.getAudioClip("audio/that.hurts.au");
 
     @Override
     public Object clone() throws CloneNotSupportedException {
@@ -15,7 +13,7 @@ public class Wall implements MapSite {
 
     @Override
     public void enter(Maze maze) {
-        hurts.play();
+
     }
 
     @Override

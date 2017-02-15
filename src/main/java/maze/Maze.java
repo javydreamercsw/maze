@@ -28,7 +28,7 @@ public class Maze implements Cloneable {
     private static final int WALL_THICKNESS = 6;
     private static final int MARGIN = 20;
 
-    private static final boolean debug = true;
+    private static final boolean debug = false;
 
     @Override
     public Object clone() throws CloneNotSupportedException {
