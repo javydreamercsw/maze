@@ -278,6 +278,8 @@ public class InteractiveMazeGame extends javax.swing.JFrame
             }
         }
         Maze maze = factory.makeMaze();
+        Maze.setRoomSize((int) roomSize.getValue());
+        Maze.setWallThickness((int) wallThickness.getValue());
         rooms = new Room[row][col];
         int count = 0;
         for (int r = 0; r < row; r++) {
