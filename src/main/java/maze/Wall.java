@@ -1,6 +1,8 @@
 package maze;
 
 import java.awt.*;
+import maze.output.OutputConsumer;
+import org.openide.util.Lookup;
 
 public class Wall implements MapSite {
 
@@ -13,7 +15,9 @@ public class Wall implements MapSite {
 
     @Override
     public void enter(Maze maze) {
-
+        Lookup.getDefault().lookupAll(OutputConsumer.class).forEach((consumer) -> {
+            consumer.output("Ouch! There's a wall there!");
+        });
     }
 
     @Override

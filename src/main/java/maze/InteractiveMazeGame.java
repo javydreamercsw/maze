@@ -4,8 +4,8 @@ import java.awt.Point;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import maze.room.Room;
 import maze.output.OutputConsumer;
+import maze.room.Room;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -28,8 +28,8 @@ public class InteractiveMazeGame extends javax.swing.JFrame
     public InteractiveMazeGame() {
         initComponents();
         layouts.removeAllItems();
-        Lookup.getDefault().lookupAll(IMazeFactory.class).forEach((factory) -> {
-            layouts.addItem(factory.getName());
+        Lookup.getDefault().lookupAll(IMazeFactory.class).forEach((f) -> {
+            layouts.addItem(f.getName());
         });
         mainSplitPane.setDividerLocation(0.75);
         mainSplitPane.setResizeWeight(0.5);
@@ -55,7 +55,7 @@ public class InteractiveMazeGame extends javax.swing.JFrame
         columns = new javax.swing.JSpinner();
         generate = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jScrollPane2 = new javax.swing.JScrollPane();
+        jScrollPane3 = new javax.swing.JScrollPane();
         output = new javax.swing.JTextArea();
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
@@ -148,9 +148,9 @@ public class InteractiveMazeGame extends javax.swing.JFrame
 
         output.setColumns(20);
         output.setRows(5);
-        jScrollPane2.setViewportView(output);
+        jScrollPane3.setViewportView(output);
 
-        mainSplitPane.setRightComponent(jScrollPane2);
+        mainSplitPane.setRightComponent(jScrollPane3);
 
         fileMenu.setMnemonic('f');
         fileMenu.setText("File");
@@ -342,20 +342,16 @@ public class InteractiveMazeGame extends javax.swing.JFrame
                     break;
                 }
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(InteractiveMazeGame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(InteractiveMazeGame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(InteractiveMazeGame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(InteractiveMazeGame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
+            LOG.log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
-            new InteractiveMazeGame().setVisible(true);
+            //This will add it to the lookup.
+            Lookup.getDefault().lookupAll(OutputConsumer.class);
+            Lookup.getDefault().lookup(InteractiveMazeGame.class).setVisible(true);
         });
     }
 
@@ -376,7 +372,7 @@ public class InteractiveMazeGame extends javax.swing.JFrame
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JComboBox<String> layouts;
     private javax.swing.JSplitPane mainSplitPane;
@@ -391,6 +387,6 @@ public class InteractiveMazeGame extends javax.swing.JFrame
 
     @Override
     public void output(String o) {
-        output.append(o);
+        output.append(o + "\n");
     }
 }
