@@ -26,8 +26,8 @@ public class Maze implements Cloneable {
 
     protected Component view;
 
-    private static final int ROOM_SIZE = 40;
-    private static final int WALL_THICKNESS = 6;
+    private static int ROOM_SIZE = 40;
+    private static int WALL_THICKNESS = 6;
     private static final int MARGIN = 20;
 
     private static final Logger LOG
@@ -106,8 +106,8 @@ public class Maze implements Cloneable {
         if (dim == null) {
             calculateDimension();
         }
-        int dx = MARGIN + -offset.x * ROOM_SIZE;
-        int dy = MARGIN + -offset.y * ROOM_SIZE;
+        int dx = MARGIN + -offset.x * getRoomSize();
+        int dy = MARGIN + -offset.y * getRoomSize();
 
         LOG.log(Level.FINE, "Maze.Draw(): offset={0}, {1}",
                 new Object[]{offset.x, offset.y});
@@ -125,9 +125,8 @@ public class Maze implements Cloneable {
                                 location.y});
 
                     room.draw(g,
-                            dx + location.x * ROOM_SIZE,
-                            dy + location.y * ROOM_SIZE,
-                            ROOM_SIZE, ROOM_SIZE, getLastDirection());
+                            dx + location.x * getRoomSize(),
+                            dy + location.y * getRoomSize(), getRoomSize(), getRoomSize(), getLastDirection());
                 }
             }
         }
@@ -142,28 +141,24 @@ public class Maze implements Cloneable {
                         if (side != null) {
                             if (dir == Direction.NORTH) {
                                 side.draw(g,
-                                        dx + location.x * ROOM_SIZE - WALL_THICKNESS / 2,
-                                        dy + location.y * ROOM_SIZE - WALL_THICKNESS / 2,
-                                        ROOM_SIZE + WALL_THICKNESS,
-                                        WALL_THICKNESS);
+                                        dx + location.x * getRoomSize() - getWallThickness() / 2,
+                                        dy + location.y * getRoomSize() - getWallThickness() / 2,
+                                        getRoomSize() + getWallThickness(), getWallThickness());
                             } else if (dir == Direction.EAST) {
                                 side.draw(g,
-                                        dx + location.x * ROOM_SIZE + ROOM_SIZE - WALL_THICKNESS / 2,
-                                        dy + location.y * ROOM_SIZE - WALL_THICKNESS / 2,
-                                        WALL_THICKNESS,
-                                        ROOM_SIZE + WALL_THICKNESS);
+                                        dx + location.x * getRoomSize() + getRoomSize() - getWallThickness() / 2,
+                                        dy + location.y * getRoomSize() - getWallThickness() / 2, getWallThickness(),
+                                        getRoomSize() + getWallThickness());
                             } else if (dir == Direction.SOUTH) {
                                 side.draw(g,
-                                        dx + location.x * ROOM_SIZE - WALL_THICKNESS / 2,
-                                        dy + location.y * ROOM_SIZE + ROOM_SIZE - WALL_THICKNESS / 2,
-                                        ROOM_SIZE + WALL_THICKNESS,
-                                        WALL_THICKNESS);
+                                        dx + location.x * getRoomSize() - getWallThickness() / 2,
+                                        dy + location.y * getRoomSize() + getRoomSize() - getWallThickness() / 2,
+                                        getRoomSize() + getWallThickness(), getWallThickness());
                             } else {
                                 side.draw(g,
-                                        dx + location.x * ROOM_SIZE - WALL_THICKNESS / 2,
-                                        dy + location.y * ROOM_SIZE - WALL_THICKNESS / 2,
-                                        WALL_THICKNESS,
-                                        ROOM_SIZE + WALL_THICKNESS);
+                                        dx + location.x * getRoomSize() - getWallThickness() / 2,
+                                        dy + location.y * getRoomSize() - getWallThickness() / 2, getWallThickness(),
+                                        getRoomSize() + getWallThickness());
                             }
                         }
                     }
@@ -287,8 +282,8 @@ public class Maze implements Cloneable {
                 maze.setView(MazePanel.this);
                 Dimension d = maze.getDimension();
                 if (d != null) {
-                    dim = new Dimension(d.width * ROOM_SIZE + 2 * MARGIN,
-                            d.height * ROOM_SIZE + 2 * MARGIN);
+                    dim = new Dimension(d.width * getRoomSize() + 2 * MARGIN,
+                            d.height * getRoomSize() + 2 * MARGIN);
                 }
                 addKeyListener(new MazeKeyListener(maze));
             }
@@ -378,5 +373,33 @@ public class Maze implements Cloneable {
      */
     public static Direction getLastDirection() {
         return lastDirection;
+    }
+
+    /**
+     * @return the ROOM_SIZE
+     */
+    public static int getRoomSize() {
+        return ROOM_SIZE;
+    }
+
+    /**
+     * @param aROOM_SIZE the ROOM_SIZE to set
+     */
+    public static void setRoomSize(int aROOM_SIZE) {
+        ROOM_SIZE = aROOM_SIZE;
+    }
+
+    /**
+     * @return the WALL_THICKNESS
+     */
+    public static int getWallThickness() {
+        return WALL_THICKNESS;
+    }
+
+    /**
+     * @param aWALL_THICKNESS the WALL_THICKNESS to set
+     */
+    public static void setWallThickness(int aWALL_THICKNESS) {
+        WALL_THICKNESS = aWALL_THICKNESS;
     }
 }
