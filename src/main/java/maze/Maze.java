@@ -1,17 +1,19 @@
 package maze;
 
-import maze.room.Room;
-import maze.command.MazeMoveCommand;
-import maze.command.UndoableCommand;
-import maze.command.Command;
-import java.util.Stack;
-import java.util.List;
-import java.util.ArrayList;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 import maze.command.ActuateDoorCommand;
 import maze.command.ChangeDirectionCommand;
+import maze.command.Command;
+import maze.command.MazeMoveCommand;
+import maze.command.UndoableCommand;
+import maze.room.Room;
 
 public class Maze implements Cloneable {
 
@@ -22,13 +24,14 @@ public class Maze implements Cloneable {
     protected Room curRoom = null;
     protected Stack moves = new Stack();
 
-    protected static Component view;
+    protected Component view;
 
     private static final int ROOM_SIZE = 40;
     private static final int WALL_THICKNESS = 6;
     private static final int MARGIN = 20;
 
-    private static final boolean debug = false;
+    private static final Logger LOG
+            = Logger.getLogger(Maze.class.getSimpleName());
 
     @Override
     public Object clone() throws CloneNotSupportedException {
@@ -106,9 +109,8 @@ public class Maze implements Cloneable {
         int dx = MARGIN + -offset.x * ROOM_SIZE;
         int dy = MARGIN + -offset.y * ROOM_SIZE;
 
-        if (debug) {
-            System.out.println("Maze.Draw(): offset=" + offset.x + ", " + offset.y);
-        }
+        LOG.log(Level.FINE, "Maze.Draw(): offset={0}, {1}",
+                new Object[]{offset.x, offset.y});
 
         // draw rooms first
         for (int i = 0; i < rooms.size(); i++) {
@@ -117,10 +119,10 @@ public class Maze implements Cloneable {
                 Point location = room.getLocation();
                 if (location != null) {
 
-                    if (debug) {
-                        System.out.println("Maze.Draw(): Room " + room.getRoomNumber()
-                                + " location: " + location.x + ", " + location.y);
-                    }
+                    LOG.log(Level.FINE,
+                            "Maze.Draw(): Room {0} location: {1}, {2}",
+                            new Object[]{room.getRoomNumber(), location.x,
+                                location.y});
 
                     room.draw(g,
                             dx + location.x * ROOM_SIZE,
@@ -282,7 +284,7 @@ public class Maze implements Cloneable {
         public MazePanel(Maze maze) {
             this.maze = maze;
             if (maze != null) {
-                maze.setView(this);
+                maze.setView(MazePanel.this);
                 Dimension d = maze.getDimension();
                 if (d != null) {
                     dim = new Dimension(d.width * ROOM_SIZE + 2 * MARGIN,
@@ -366,9 +368,7 @@ public class Maze implements Cloneable {
                 //Move
                 command = new MazeMoveCommand(maze, getLastDirection());
             }
-            if (command != null) {
-                maze.doCommand(command);
-            }
+            maze.doCommand(command);
         }
         Maze maze;
     }
