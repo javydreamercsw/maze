@@ -1,11 +1,18 @@
 package maze;
 
+import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+import javax.swing.JFileChooser;
 import maze.output.OutputConsumer;
 import maze.room.Room;
+import org.apache.commons.io.FilenameUtils;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -21,6 +28,7 @@ public class InteractiveMazeGame extends javax.swing.JFrame
             = Logger.getLogger(InteractiveMazeGame.class.getSimpleName());
     private Room[][] rooms;
     private IMazeFactory factory = new MazeFactory();
+    private Maze maze;
 
     /**
      * Creates new form InteractiveMazeGame
@@ -65,8 +73,6 @@ public class InteractiveMazeGame extends javax.swing.JFrame
         output = new javax.swing.JTextArea();
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
-        openMenuItem = new javax.swing.JMenuItem();
-        saveMenuItem = new javax.swing.JMenuItem();
         saveAsMenuItem = new javax.swing.JMenuItem();
         exitMenuItem = new javax.swing.JMenuItem();
         editMenu = new javax.swing.JMenu();
@@ -175,6 +181,7 @@ public class InteractiveMazeGame extends javax.swing.JFrame
 
         mainSplitPane.setLeftComponent(jSplitPane1);
 
+        output.setEditable(false);
         output.setColumns(20);
         output.setRows(5);
         jScrollPane3.setViewportView(output);
@@ -184,17 +191,14 @@ public class InteractiveMazeGame extends javax.swing.JFrame
         fileMenu.setMnemonic('f');
         fileMenu.setText("File");
 
-        openMenuItem.setMnemonic('o');
-        openMenuItem.setText("Open");
-        fileMenu.add(openMenuItem);
-
-        saveMenuItem.setMnemonic('s');
-        saveMenuItem.setText("Save");
-        fileMenu.add(saveMenuItem);
-
+        saveAsMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
         saveAsMenuItem.setMnemonic('a');
-        saveAsMenuItem.setText("Save As ...");
-        saveAsMenuItem.setDisplayedMnemonicIndex(5);
+        saveAsMenuItem.setText("Save");
+        saveAsMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveAsMenuItemActionPerformed(evt);
+            }
+        });
         fileMenu.add(saveAsMenuItem);
 
         exitMenuItem.setMnemonic('x');
@@ -277,7 +281,7 @@ public class InteractiveMazeGame extends javax.swing.JFrame
                 break;
             }
         }
-        Maze maze = factory.makeMaze();
+        maze = factory.makeMaze();
         Maze.setRoomSize((int) roomSize.getValue());
         Maze.setWallThickness((int) wallThickness.getValue());
         rooms = new Room[row][col];
@@ -286,42 +290,32 @@ public class InteractiveMazeGame extends javax.swing.JFrame
             for (int c = 0; c < col; c++) {
                 rooms[r][c] = factory.makeRoom(++count);
                 //Add walls on borders of the room
-                rooms[r][c].setSide(Direction.NORTH,
-                        factory.makeWall());
+                if (r == 0) {
+                    rooms[r][c].setSide(Direction.NORTH,
+                            factory.makeWall());
+                }
                 rooms[r][c].setSide(Direction.WEST,
                         factory.makeWall());
                 rooms[r][c].setSide(Direction.SOUTH,
                         factory.makeWall());
-                rooms[r][c].setSide(Direction.EAST,
-                        factory.makeWall());
+                if (c == rooms[0].length - 1) {
+                    rooms[r][c].setSide(Direction.EAST,
+                            factory.makeWall());
+                }
                 rooms[r][c].setLocation(new Point(c, r));
                 //Link to nearby rooms
+                LOG.log(Level.INFO, "Room: {0}, {1}", new Object[]{r, c});
                 if (c > 0) {
                     //Has a room to the left. Add a wall, door or set open
-                    setRandomSide(Direction.WEST, r, c);
+                    Direction d = Direction.WEST;
+                    setRandomSide(d, r, c);
                 }
                 if (r > 0) {
                     //Has a room to on top
-                    setRandomSide(Direction.NORTH, r, c);
+                    Direction d = Direction.NORTH;
+                    setRandomSide(d, r, c);
                 }
                 maze.addRoom(rooms[r][c]);
-            }
-        }
-        for (int r = 0; r < row; r++) {
-            for (int c = 0; c < col; c++) {
-                //Connect doors to next room
-                if (r > 0) {
-                    fixSide(Direction.NORTH, r, c);
-                }
-                if (c < rooms[0].length - 1) {
-                    fixSide(Direction.EAST, r, c);
-                }
-                if (c > 0) {
-                    fixSide(Direction.WEST, r, c);
-                }
-                if (r < rooms.length - 1) {
-                    fixSide(Direction.SOUTH, r, c);
-                }
             }
         }
         LOG.log(Level.INFO, "Added {0} rooms", count);
@@ -329,32 +323,88 @@ public class InteractiveMazeGame extends javax.swing.JFrame
         jScrollPane1.setViewportView(new Maze.MazePanel(maze));
     }//GEN-LAST:event_generateActionPerformed
 
-    private void fixSide(Direction d, int r, int c) {
-        MapSite side = rooms[r][c].getSide(d);
-        Room r2;
-        if (d.equals(Direction.NORTH)) {
+    private void saveAsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveAsMenuItemActionPerformed
+        if (maze != null) {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Specify a file to save");
+
+            int userSelection = fileChooser.showSaveDialog(this);
+
+            if (userSelection == JFileChooser.APPROVE_OPTION) {
+                try {
+                    File fileToSave = fileChooser.getSelectedFile();
+                    if (!FilenameUtils.getExtension(fileToSave.getName())
+                            .equalsIgnoreCase("png")) {
+                        fileToSave = new File(fileToSave.toString() + ".png");  // append .png if "foo.jpg.png" is OK
+                        fileToSave = new File(fileToSave.getParentFile(),
+                                FilenameUtils.getBaseName(fileToSave.getName())
+                                + ".png"); // ALTERNATIVELY: remove the extension (if any) and replace it with ".xml"
+                    }
+                    BufferedImage bImg = new BufferedImage(
+                            jScrollPane1.getWidth(),
+                            jScrollPane1.getHeight(),
+                            BufferedImage.TYPE_INT_RGB);
+                    Graphics2D cg = bImg.createGraphics();
+                    maze.draw(cg);
+                    if (ImageIO.write(bImg, "png", fileToSave)) {
+                        for (OutputConsumer c : Lookup.getDefault().lookupAll(OutputConsumer.class)) {
+                            c.output("Saved maze to: " + fileToSave);
+                        }
+                    }
+                } catch (IOException ex) {
+                    LOG.log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+    }//GEN-LAST:event_saveAsMenuItemActionPerformed
+
+    //Gets room at the other side of the MapSite in specified direction.
+    private Room getOppositeRoom(Direction d, int r, int c) {
+        Room r2 = null;
+        if (d.equals(Direction.NORTH) && r > 0) {
             r2 = rooms[r - 1][c];
-        } else if (d.equals(Direction.SOUTH)) {
+        } else if (d.equals(Direction.SOUTH) && r < rooms[0].length) {
             r2 = rooms[r + 1][c];
-        } else if (d.equals(Direction.EAST)) {
+        } else if (d.equals(Direction.EAST) && c < rooms.length) {
             r2 = rooms[r][c + 1];
-        } else {
+        } else if (c > 0) {
             r2 = rooms[r][c - 1];
         }
+        return r2;
+    }
+
+    private void fixSide(Direction d, int r, int c) {
+        LOG.log(Level.INFO, "Fixing Room: {0}, {1}; Direction {2}",
+                new Object[]{r, c, d.toString()});
+        MapSite side = rooms[r][c].getSide(d);
+        Room oppositeRoom = getOppositeRoom(d, r, c);
         if (side instanceof Door) {
-            Door door = (Door) side;
-            door.setRooms(rooms[r][c], r2);
-            r2.setSide(d.opposite(), door);
-        } else if (side == null) {
-            r2.setSide(d.opposite(), null);
+            if (oppositeRoom != null) {
+                Door door = (Door) side;
+                door.setRooms(rooms[r][c], oppositeRoom);
+                oppositeRoom.setSide(d.opposite(), door);
+            }
+        } else if (side instanceof Wall) {
+            if (oppositeRoom != null) {
+                Wall wall = (Wall) side;
+                oppositeRoom.setSide(d.opposite(), wall);
+            }
+        } else {
+            oppositeRoom.setSide(d.opposite(), null);
         }
     }
 
     private void setRandomSide(Direction d, int row, int col) {
-        //Door
-        Door door = factory.makeDoor(rooms[row][col], null);
-        door.setOpen(new Random().nextBoolean());
-        rooms[row][col].setSide(d, door);
+        if (new Random().nextBoolean()) {
+            LOG.log(Level.INFO, "Adding door at: {0}", d.toString());
+            Door door = factory.makeDoor(rooms[row][col], null);
+            door.setOpen(new Random().nextBoolean());
+            rooms[row][col].setSide(d, door);
+        } else {
+            LOG.log(Level.FINE, "Adding wall at: {0}", d.toString());
+            rooms[row][col].setSide(d, factory.makeWall());
+        }
+        fixSide(d, row, col);
     }
 
     /**
@@ -410,13 +460,11 @@ public class InteractiveMazeGame extends javax.swing.JFrame
     private javax.swing.JComboBox<String> layouts;
     private javax.swing.JSplitPane mainSplitPane;
     private javax.swing.JMenuBar menuBar;
-    private javax.swing.JMenuItem openMenuItem;
     private javax.swing.JTextArea output;
     private javax.swing.JMenuItem pasteMenuItem;
     private javax.swing.JSpinner roomSize;
     private javax.swing.JSpinner rows;
     private javax.swing.JMenuItem saveAsMenuItem;
-    private javax.swing.JMenuItem saveMenuItem;
     private javax.swing.JSpinner wallThickness;
     // End of variables declaration//GEN-END:variables
 
