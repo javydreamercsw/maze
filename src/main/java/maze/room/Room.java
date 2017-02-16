@@ -2,6 +2,8 @@ package maze.room;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import maze.Direction;
 import maze.Door;
 import maze.MapSite;
@@ -12,6 +14,8 @@ public class Room implements MapSite {
 
     public static Color ROOM_COLOR = new Color(152, 251, 152);
     public static Color PLAYER_COLOR = Color.red;
+    private static final Logger LOG
+            = Logger.getLogger(Room.class.getSimpleName());
 
     public Room(int roomNumber) {
         this.roomNumber = roomNumber;
@@ -38,6 +42,11 @@ public class Room implements MapSite {
 
     public void setSide(Direction dir, MapSite site) {
         if (dir != null) {
+            if (sides[dir.getOrdinal()] != null) {
+                LOG.log(Level.WARNING, "Assigning {0} to replace {1}",
+                        new Object[]{site.getClass().getSimpleName(),
+                            sides[dir.getOrdinal()].getClass().getSimpleName()});
+            }
             sides[dir.getOrdinal()] = site;
             if (site instanceof Door) {
                 Door door = (Door) site;
