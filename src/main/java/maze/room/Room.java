@@ -96,6 +96,7 @@ public class Room implements MapSite {
         g.fillRect(x, y, w, h);
         if (inroom) {
             g.setColor(PLAYER_COLOR);
+            //TODO: arrow in proportion to room dimensions.
             int width = 10;
             int height = 10;
             Point p1 = new Point(x + w / 2 - 5, y + h / 2);
