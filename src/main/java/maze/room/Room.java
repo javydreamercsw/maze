@@ -35,19 +35,19 @@ public class Room implements MapSite {
 
     public MapSite getSide(Direction dir) {
         if (dir != null) {
-            return sides[dir.getOrdinal()];
+            return sides[dir.ordinal()];
         }
         return null;
     }
 
     public void setSide(Direction dir, MapSite site) {
         if (dir != null) {
-            if (sides[dir.getOrdinal()] != null) {
+            if (sides[dir.ordinal()] != null) {
                 LOG.log(Level.WARNING, "Assigning {0} to replace {1}",
                         new Object[]{site.getClass().getSimpleName(),
-                            sides[dir.getOrdinal()].getClass().getSimpleName()});
+                            sides[dir.ordinal()].getClass().getSimpleName()});
             }
-            sides[dir.getOrdinal()] = site;
+            sides[dir.ordinal()] = site;
             if (site instanceof Door) {
                 Door door = (Door) site;
                 if (dir == Direction.NORTH
@@ -113,12 +113,18 @@ public class Room implements MapSite {
             Point p3 = new Point(p1.x + (width / 2), p1.y - height);
             Point[] points = new Point[]{p1, p2, p3};
             int angle = 0;
-            if (d.equals(Direction.EAST)) {
-                angle = 90;
-            } else if (d.equals(Direction.WEST)) {
-                angle = 270;
-            } else if (d.equals(Direction.SOUTH)) {
-                angle = 180;
+            switch (d) {
+                case EAST:
+                    angle = 90;
+                    break;
+                case WEST:
+                    angle = 270;
+                    break;
+                case SOUTH:
+                    angle = 180;
+                    break;
+                default:
+                    break;
             }
             //Now rotater based on direction
             Point center = new Point(x + w / 2, y + h / 2);
