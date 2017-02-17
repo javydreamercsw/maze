@@ -22,10 +22,6 @@ public class Room implements MapSite {
         this.roomNumber = roomNumber;
     }
 
-    protected Room() {
-        //Constructor for importing.
-    }
-
     @Override
     public Object clone() throws CloneNotSupportedException {
         Room room = (Room) super.clone();
