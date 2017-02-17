@@ -49,37 +49,6 @@ public class Direction implements Comparable {
         return VALUES[(ordinal + 2) % 4];
     }
 
-    /*
-  public static Direction first() {
-    return NORTH;
-  }
-
-  public Direction next() {
-    if (this == NORTH) {
-      return EAST;
-    } else if (this == EAST) {
-      return SOUTH;
-    } else if (this == SOUTH) {
-      return WEST;
-    } else if (this == WEST) {
-      return null;
-    }
-    return null;
-  }
-
-  public Direction opposite() {
-    if (this == NORTH) {
-      return SOUTH;
-    } else if (this == EAST) {
-      return WEST;
-    } else if (this == SOUTH) {
-      return NORTH;
-    } else if (this == WEST) {
-      return EAST;
-    }
-    return null;
-  }
-     */
     private Direction(String name) {
         this.name = name;
     }
