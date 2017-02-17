@@ -1,5 +1,6 @@
 package maze;
 
+import maze.room.Door;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;

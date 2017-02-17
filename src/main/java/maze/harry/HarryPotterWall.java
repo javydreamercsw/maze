@@ -1,6 +1,7 @@
 
 package maze.harry; 
 
+import maze.room.Wall;
 import java.awt.*; 
 import maze.*;
 

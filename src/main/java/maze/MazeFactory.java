@@ -1,5 +1,7 @@
 package maze;
 
+import maze.room.Wall;
+import maze.room.Door;
 import maze.room.Room;
 import org.openide.util.lookup.ServiceProvider;
 

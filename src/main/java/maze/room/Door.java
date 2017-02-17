@@ -1,8 +1,12 @@
-package maze;
+package maze.room;
 
-import maze.room.Room;
-import maze.output.OutputConsumer;
 import java.awt.*;
+import java.util.Objects;
+import maze.Direction;
+import maze.MapSite;
+import maze.Maze;
+import maze.Orientation;
+import maze.output.OutputConsumer;
 import org.openide.util.Lookup;
 
 public class Door implements MapSite {
@@ -15,6 +19,10 @@ public class Door implements MapSite {
     public Door(Room room1, Room room2) {
         this.room1 = room1;
         this.room2 = room2;
+    }
+
+    public Door() {
+        //Empty constructor;
     }
 
     @Override
@@ -92,6 +100,44 @@ public class Door implements MapSite {
 
     @Override
     public void draw(Graphics g, int x, int y, int w, int h, Direction d) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        draw(g, x, y, w, h);
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 67 * hash + Objects.hashCode(this.room1);
+        hash = 67 * hash + Objects.hashCode(this.room2);
+        hash = 67 * hash + (this.open ? 1 : 0);
+        hash = 67 * hash + Objects.hashCode(this.orientation);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Door other = (Door) obj;
+        if (this.open != other.open) {
+            return false;
+        }
+        if (!Objects.equals(this.room1, other.room1)) {
+            return false;
+        }
+        if (!Objects.equals(this.room2, other.room2)) {
+            return false;
+        }
+        if (!Objects.equals(this.orientation, other.orientation)) {
+            return false;
+        }
+        return true;
+    }
+
 }

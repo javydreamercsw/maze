@@ -1,6 +1,9 @@
-package maze;
+package maze.room;
 
 import java.awt.*;
+import maze.Direction;
+import maze.MapSite;
+import maze.Maze;
 import maze.output.OutputConsumer;
 import org.openide.util.Lookup;
 
@@ -28,6 +31,6 @@ public class Wall implements MapSite {
 
     @Override
     public void draw(Graphics g, int x, int y, int w, int h, Direction d) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        draw(g, x, y, w, h);
     }
 }

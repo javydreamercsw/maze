@@ -2,10 +2,11 @@ package maze.room;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import maze.Direction;
-import maze.Door;
 import maze.MapSite;
 import maze.Maze;
 import maze.Orientation;
@@ -19,6 +20,10 @@ public class Room implements MapSite {
 
     public Room(int roomNumber) {
         this.roomNumber = roomNumber;
+    }
+
+    protected Room() {
+        //Constructor for importing.
     }
 
     @Override
@@ -137,5 +142,39 @@ public class Room implements MapSite {
             }
             g.fillPolygon(polygon);
         }
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 41 * hash + this.roomNumber;
+        hash = 41 * hash + (this.inroom ? 1 : 0);
+        hash = 41 * hash + Arrays.deepHashCode(this.sides);
+        hash = 41 * hash + Objects.hashCode(this.location);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Room other = (Room) obj;
+        if (this.roomNumber != other.roomNumber) {
+            return false;
+        }
+        if (this.inroom != other.inroom) {
+            return false;
+        }
+        if (!Arrays.deepEquals(this.sides, other.sides)) {
+            return false;
+        }
+        return Objects.equals(this.location, other.location);
     }
 }

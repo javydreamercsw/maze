@@ -1,6 +1,7 @@
 
 package maze.snow; 
 
+import maze.room.Wall;
 import java.awt.*; 
 import maze.*;
 
