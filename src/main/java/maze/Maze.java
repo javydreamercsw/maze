@@ -1,6 +1,5 @@
 package maze;
 
-import maze.room.Door;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
@@ -14,6 +13,7 @@ import maze.command.ChangeDirectionCommand;
 import maze.command.Command;
 import maze.command.MazeMoveCommand;
 import maze.command.UndoableCommand;
+import maze.room.Door;
 import maze.room.Room;
 
 public class Maze implements Cloneable {
@@ -127,7 +127,8 @@ public class Maze implements Cloneable {
 
                     room.draw(g,
                             dx + location.x * getRoomSize(),
-                            dy + location.y * getRoomSize(), getRoomSize(), getRoomSize(), getLastDirection());
+                            dy + location.y * getRoomSize(), getRoomSize(),
+                            getRoomSize(), getLastDirection());
                 }
             }
         }
@@ -143,26 +144,40 @@ public class Maze implements Cloneable {
                             switch (dir) {
                                 case NORTH:
                                     side.draw(g,
-                                            dx + location.x * getRoomSize() - getWallThickness() / 2,
-                                            dy + location.y * getRoomSize() - getWallThickness() / 2,
-                                            getRoomSize() + getWallThickness(), getWallThickness());
+                                            dx + location.x * getRoomSize()
+                                            - getWallThickness() / 2,
+                                            dy + location.y * getRoomSize()
+                                            - getWallThickness() / 2,
+                                            getRoomSize() + getWallThickness(),
+                                            getWallThickness());
                                     break;
                                 case EAST:
                                     side.draw(g,
-                                            dx + location.x * getRoomSize() + getRoomSize() - getWallThickness() / 2,
-                                            dy + location.y * getRoomSize() - getWallThickness() / 2, getWallThickness(),
+                                            dx + location.x * getRoomSize()
+                                            + getRoomSize()
+                                            - getWallThickness() / 2,
+                                            dy + location.y * getRoomSize()
+                                            - getWallThickness() / 2,
+                                            getWallThickness(),
                                             getRoomSize() + getWallThickness());
                                     break;
                                 case SOUTH:
                                     side.draw(g,
-                                            dx + location.x * getRoomSize() - getWallThickness() / 2,
-                                            dy + location.y * getRoomSize() + getRoomSize() - getWallThickness() / 2,
-                                            getRoomSize() + getWallThickness(), getWallThickness());
+                                            dx + location.x * getRoomSize()
+                                            - getWallThickness() / 2,
+                                            dy + location.y * getRoomSize()
+                                            + getRoomSize()
+                                            - getWallThickness() / 2,
+                                            getRoomSize() + getWallThickness(),
+                                            getWallThickness());
                                     break;
                                 default:
                                     side.draw(g,
-                                            dx + location.x * getRoomSize() - getWallThickness() / 2,
-                                            dy + location.y * getRoomSize() - getWallThickness() / 2, getWallThickness(),
+                                            dx + location.x * getRoomSize()
+                                            - getWallThickness() / 2,
+                                            dy + location.y * getRoomSize()
+                                            - getWallThickness() / 2,
+                                            getWallThickness(),
                                             getRoomSize() + getWallThickness());
                                     break;
                             }
@@ -202,20 +217,31 @@ public class Maze implements Cloneable {
                                         && otherSide.getLocation() == null) {
                                     switch (dir) {
                                         case NORTH:
-                                            otherSide.setLocation(new Point(location.x, location.y - 1));
+                                            otherSide.setLocation(
+                                                    new Point(location.x,
+                                                            location.y - 1));
                                             minY = Math.min(minY, location.y - 1);
                                             break;
                                         case EAST:
-                                            otherSide.setLocation(new Point(location.x + 1, location.y));
-                                            maxX = Math.max(maxX, location.x + 1);
+                                            otherSide.setLocation(
+                                                    new Point(location.x + 1,
+                                                            location.y));
+                                            maxX = Math.max(maxX,
+                                                    location.x + 1);
                                             break;
                                         case SOUTH:
-                                            otherSide.setLocation(new Point(location.x, location.y + 1));
-                                            maxY = Math.max(maxY, location.y + 1);
+                                            otherSide.setLocation(
+                                                    new Point(location.x,
+                                                            location.y + 1));
+                                            maxY = Math.max(maxY,
+                                                    location.y + 1);
                                             break;
                                         default:
-                                            otherSide.setLocation(new Point(location.x - 1, location.y));
-                                            minX = Math.min(minX, location.x - 1);
+                                            otherSide.setLocation(
+                                                    new Point(location.x - 1,
+                                                            location.y));
+                                            minX = Math.min(minX,
+                                                    location.x - 1);
                                             break;
                                     }
                                     changed = true;
@@ -285,7 +311,10 @@ public class Maze implements Cloneable {
         }
     }
 
-    public static class MazePanel extends JPanel {
+    public final static class MazePanel extends JPanel {
+
+        private final Maze maze;
+        private Dimension dim;
 
         public MazePanel(Maze maze) {
             this.maze = maze;
@@ -325,13 +354,11 @@ public class Maze implements Cloneable {
         public Dimension getMinimumSize() {
             return dim;
         }
-
-        private final Maze maze;
-        private Dimension dim;
-
     }
 
     static class MazeKeyListener extends KeyAdapter {
+
+        private Maze maze;
 
         MazeKeyListener(Maze maze) {
             this.maze = maze;
@@ -376,7 +403,6 @@ public class Maze implements Cloneable {
             }
             maze.doCommand(command);
         }
-        Maze maze;
     }
 
     /**
