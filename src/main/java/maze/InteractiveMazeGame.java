@@ -1,22 +1,24 @@
 package maze;
 
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.image.BufferedImage;
+import java.awt.*;
+import java.awt.image.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.imageio.ImageIO;
-import javax.swing.JFileChooser;
+import javax.swing.*;
+
+import org.apache.commons.io.FilenameUtils;
+import org.openide.util.Lookup;
+import org.openide.util.lookup.ServiceProvider;
+
 import maze.output.OutputConsumer;
 import maze.room.Door;
 import maze.room.Room;
 import maze.room.Wall;
-import org.apache.commons.io.FilenameUtils;
-import org.openide.util.Lookup;
-import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
@@ -332,6 +334,7 @@ public class InteractiveMazeGame extends javax.swing.JFrame
         LOG.log(Level.INFO, "Added {0} rooms", count);
         maze.setCurrentRoom(1);
         mazePanel.setViewportView(new Maze.MazePanel(maze));
+        output.setText("");
     }//GEN-LAST:event_generateActionPerformed
 
     private void saveAsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveAsMenuItemActionPerformed
