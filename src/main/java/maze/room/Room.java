@@ -7,10 +7,13 @@ import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.openide.util.Lookup;
+
 import maze.Direction;
 import maze.MapSite;
 import maze.Maze;
 import maze.Orientation;
+import maze.output.OutputConsumer;
 
 public class Room implements MapSite
 {
@@ -109,6 +112,13 @@ public class Room implements MapSite
   public void enter(Maze maze)
   {
     maze.setCurrentRoom(this);
+    if (isInRoom() && isExit())
+    {
+      Lookup.getDefault().lookupAll(OutputConsumer.class).forEach((consumer) ->
+      {
+        consumer.output("You solved the maze!");
+      });
+    }
   }
 
   public boolean isInRoom()
